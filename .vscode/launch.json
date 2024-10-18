@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "preLaunchTask": "${defaultBuildTask}",
+      "type": "probe-rs-debug",
+      "request": "launch",
+      "name": "baremetal",
+      "flashingConfig": {
+        "flashingEnabled": true,
+      },
+      "chip": "STM32F767ZITx",
+      "coreConfigs": [
+        {
+          //!MODIFY
+          "programBinary": "${workspaceFolder}/example_project/target/thumbv7em-none-eabihf/debug/baremetal"
+        }
+      ]
+    }
+  ]
+}

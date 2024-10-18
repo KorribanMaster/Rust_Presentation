@@ -1,0 +1,874 @@
+in the last video we discussed how to
+
+get set up for embedded development and
+
+rust and today we're going to pick up
+
+where we left off our goal is simple the
+
+hello world of embedded programming is
+
+blinking an LED and that's what we're
+
+going to do with our
+
+microbit this task can be accomplished
+
+using a variety of crates that operate
+
+at different levels of abstraction so
+
+this is going to give us a great
+
+opportunity to learn a bit about how the
+
+embedded rust ecosystem works we'll
+
+start our investigation at the very
+
+lowest level and work our way up stack
+
+nope not at the pack oxidation forms on
+
+the metal so that's where we'll
+
+[Music]
+
+begin this chapter is going to cover
+
+what we need to do to switch on our LED
+
+so we're going to be digging into the
+
+microbit schematic and it's
+
+microcontrollers data sheet for many of
+
+you this will be a review and you could
+
+skip ahead if you want but for those
+
+that are new to embedded systems welcome
+
+this chapter is for you let's start by
+
+identifying which led we want to use and
+
+how it's connected to our
+
+microcontroller and for that we'll need
+
+to dig up our board
+
+schematic which microbit makes available
+
+on
+
+GitHub and then look for the
+
+LEDs there we are okay the V2 microbit
+
+has lots of LEDs to choose from let's
+
+just use D2 to light it up we'll need to
+
+drive the anode Side High and the
+
+cathode side low which means controlling
+
+pins Row one and column one let's see
+
+where they connect to our
+
+microcontroller
+
+okay Row one is Port 0 pin 21 and column
+
+1 is port0 pin
+
+28 to configure these pins as digital
+
+outputs we'll need the general purpose
+
+IO or gpio peripheral all the
+
+microcontrollers peripherals are
+
+represented as register blocks within
+
+the memory map and configuring or
+
+interacting with them amounts to memory
+
+reads or writes at specific addresses
+
+with that in mind let's revisit the data
+
+sheet for our microbits nrf52 833
+
+microcontrol and find the section on
+
+gpio now in some microcontrollers you
+
+may need to enable the peripheral clocks
+
+before trying to set up gpio but that's
+
+not the case with the
+
+nrf52 configuration for gpio happens in
+
+the pin CNF
+
+registers so let's find the section
+
+describing the register layout in memory
+
+here we go all right the Base address
+
+for gpio is hex 50 million and that's
+
+also the start address for Port zero
+
+then there's an offset for register to
+
+set the output or read the input on
+
+various pins and finally we have one
+
+configuration register for each of the
+
+32 pins per port and we'll need pins 21
+
+and 28 to find out what value we need to
+
+set at these offsets let's take a look
+
+at the pin CNF register bit map there
+
+are five Fields within the value that
+
+determine the pin's configuration but
+
+the most important is the first which
+
+controls the direction we'll need to set
+
+this to one to indicate we need an
+
+output the only other field we may want
+
+to change is the drive configuration but
+
+the standard Push Pull output should be
+
+sufficient to power our
+
+LED once configuration is complete we'll
+
+control the output by setting a value in
+
+the out register where each bit position
+
+represents its corresponding pin number
+
+our pin 28 or column 1 we can leave zero
+
+like all the others and our pin 21 or
+
+Row one we can toggle between 1 and zero
+
+to drive the pin high and low and now we
+
+have what we need need we know the
+
+addresses and the values they need to be
+
+set to so how do we go about doing this
+
+in C this would just be a matter of
+
+dereferencing the address cast as a
+
+pointer and assigning the value but that
+
+can't be how we do things in Rust right
+
+right in Rust to achieve the goal of
+
+memory safety you need to play by the
+
+borrow Checker rules which means working
+
+with either owned values or references
+
+and while references are basically
+
+pointers they carry with them a contract
+
+they can only hold the address of a
+
+valid value this means they can't be
+
+null or assigned to some arbitrary
+
+location in memory like you could with a
+
+raw pointer because the borrow Checker
+
+just doesn't know what lives there so if
+
+we need to set a value at a specific
+
+address using safe normal rust we're
+
+kind of stuck but there is an escape
+
+hatch unsafe rust it's meant to be used
+
+whenever you need to do something that
+
+the borrow Checker has no way to verify
+
+like dereferencing a raw pointer you're
+
+basically telling the compiler and
+
+anyone else that comes across the code
+
+in your unsafe block or function trust
+
+me it's actually safe to do this and
+
+then include a comment describing why
+
+that's the case unsafe R Us should
+
+really only be used when there's no
+
+other sane alternative and if you see a
+
+lot of it particularly in application
+
+code that's often a bit of a red flag in
+
+our case this is the best solution we
+
+need to set a specific address to a
+
+specific value and we affirm that it's
+
+safe to do this because we know it lives
+
+at that address and we know that no one
+
+else is using it so here we go let's
+
+start by defining our gp0 configuration
+
+addresses for Row one and column 1 as
+
+raw pointers identify the bit field
+
+we're using just to be explicit and
+
+create the configuration value we'll
+
+assign then in an unsafe block we can
+
+dreference those raw pointers with our
+
+configuration value but these should
+
+really be volatile wrs to prevent the
+
+compiler from optimizing them out so we
+
+use the core libraries WR volatile
+
+function in
+
+instead then we'll do something similar
+
+with our out register identify the row
+
+one bit will be toggling and use a Bo to
+
+track state and then the loop will
+
+toggle the row one bit to switch the LED
+
+on and off and bring back our bootleg
+
+delay and update
+
+state that should work felt a bit dirty
+
+did not spark Joy but let's give it a
+
+shot hey we got Blinky
+
+it's not pretty and while it does work
+
+repeating this process for any
+
+peripheral we want to use is tedious and
+
+error prone so we need a better solution
+
+and thankfully we have
+
+[Music]
+
+one the lowest layer of our embedded
+
+rust stack is the peripheral access
+
+crate or pack and it has exactly what
+
+we're looking for it provides an
+
+interface to access all of our
+
+microcontrollers peripheral registers it
+
+knows their names their addresses their
+
+bit fields and even has some description
+
+information if this sounds like it would
+
+be a colossal amount of work to put
+
+together for every register for every
+
+microcontroller you'd be right but
+
+thankfully we don't have to start from
+
+scratch arm developed the simpys system
+
+view description standard which
+
+specifies a machine readable format for
+
+a file that contains all this register
+
+information and manufacturers offer
+
+these files for their products the SVD 2
+
+rust crate does the rest it transforms
+
+that manufacturer defined SVD file into
+
+a rust pack so how do we use an SVD to
+
+rust generated pack our peripherals are
+
+held as register blocks inside the
+
+Pack's peripheral Singleton so our
+
+application first needs to take
+
+ownership of that instance then we can
+
+access peripheral registers by name
+
+reading their bit Fields directly or
+
+writing to them through a closure so
+
+let's find a pack for our
+
+microcontroller and add it to our
+
+project get rid of what we had
+
+before take the the peripherals from the
+
+pack configure our gpio port0 pin 21
+
+using the bit field names and values and
+
+do the same for pin 28 and toggle our
+
+LED via the port zero out register
+
+setting only bit
+
+21 here we
+
+go
+
+awesome this just gave us a safer more
+
+ergonomic way to interface with our
+
+peripheral registers and in a release
+
+build those closures and their function
+
+calls are zero cost abstractions using a
+
+pack is clearly an improvement over what
+
+we had before but I think we could still
+
+do
+
+[Music]
+
+better the pack is great but it would be
+
+nice if we didn't have to remember the
+
+names of specific registers and bit
+
+fields to perform common operations
+
+enter the hardware abstraction layer or
+
+how it's built on top of the pack and
+
+allows us to work at a higher level but
+
+a well-designed how will also guide us
+
+how to properly use our Hardware
+
+ensuring that our peripherals operate as
+
+intended so let's find a Hal for our
+
+nrf52
+
+833 and we can see this is actually part
+
+of a larger group of hows for NRF
+
+controllers all located in the same
+
+GitHub repo and they've got some
+
+examples including one with a
+
+blinkie okay to use this crate we're
+
+still taking the peripherals from the
+
+pack though now the how includes its own
+
+which it re-exports as pack and then
+
+each how peripheral has has a
+
+Constructor that transforms the
+
+underlying pack
+
+representation and we also see that the
+
+LED it's creating is utilizing the
+
+embedded how creates output pin trait to
+
+drive the output level high and low so
+
+let's get both the nrf52 833 and
+
+embedded hows added and start playing
+
+around we'll update our import
+
+statements to use the how's
+
+pack remove the register manipulation
+
+now we can create a how instance of our
+
+gpio Port zero through a parts
+
+Constructor that takes our pack p
+
+0 and from here we have access to all of
+
+our Port zero
+
+pins let's create one for our column one
+
+which is mapped to pin 28 and turn it
+
+into a push pull
+
+output this requires an initial output
+
+level we need
+
+low and we can do the same for Row one
+
+on P
+
+21 we're going to use the row one pin to
+
+toggle the LED state so let's mark that
+
+as
+
+mutable and we just need to leave column
+
+one grounded so we'll mark that as no
+
+longer used now we can set the row one
+
+pin state in the loop this takes a pin
+
+State enum with high or low
+
+values that also implements the from
+
+trade for Bulls to help us with type
+
+conversion this is technically fallible
+
+but we don't care about the return
+
+result so we'll just let that hit the
+
+floor cool let's give it a
+
+[Music]
+
+spin still
+
+good to me this looks much nicer than
+
+anything we've done so far the naming of
+
+the pins types and methods makes it very
+
+clear what we're trying to do but
+
+there's more to this code than meets the
+
+eye so I think it's worth taking a few
+
+moments to see what makes it special
+
+[Music]
+
+one of my favorite things about rust is
+
+its ability to help you find problems
+
+with your code at compile time instead
+
+of discovering them at runtime this of
+
+course applies to memory safety where
+
+the borrow Checker will stop you from
+
+doing something potentially unsafe but
+
+it's also true for the type system which
+
+allows you to enforce some of your
+
+invariants when your code is built
+
+instead of placing them in your
+
+application Logic for example one of our
+
+Hardware invariants is that you must
+
+configure a pin as an output before you
+
+try to drop it through the out register
+
+if we revisit our code and take a look
+
+inside the how Port zero we can see that
+
+it has a representation for each pin and
+
+it defaults to a disconnected State from
+
+here the only thing you can do with this
+
+pin type is turn it into something else
+
+driving it high or low is not an option
+
+when we do call the into Push Pull
+
+output method behind the scenes it
+
+handles doing whatever register
+
+manipulation is required to perform
+
+configuration and it transforms this
+
+disconnected pin type into an output pin
+
+type and from there we do have the
+
+option to drive its output
+
+state so anywhere you see one of these
+
+output pins in your code you know it's
+
+been correctly configured by
+
+construction there just isn't another
+
+way to get one of these another thing
+
+you might notice is the extensive use of
+
+both Singleton and transfer of ownership
+
+in the first line we're taking ownership
+
+of the pack peripheral Singleton then we
+
+create our how representation of Port
+
+zero through a parts Constructor that
+
+takes pack P0 as an owned value not by
+
+reference meaning that from this point
+
+forward the pack P0 symbol is basically
+
+gone as far as the borrow Checker is
+
+concerned we can't refer to it or try to
+
+create a second potentially conflicting
+
+how Port
+
+zero the same is true for our output
+
+pins their creation literally consumed
+
+the underlying disconnected pins so
+
+while we can transform them into
+
+something else we can't try to get
+
+another copy from Port zero and this is
+
+a good thing it maintains a single
+
+source of Truth for each peripheral we
+
+use and leverages the type system to
+
+reflect its current state one last thing
+
+the embedded Hal provides some common
+
+trait definitions that developers can
+
+Implement when building their device Hal
+
+we saw this at work in our Blinky
+
+example where the NRF Hal implemented
+
+the output pin trait for its output pin
+
+type allowing us to call any of these
+
+set methods to drive the output these
+
+traits build some standardization into
+
+the embedded rust ecosystem and
+
+facilitate the creation of platform
+
+agnostic drivers however however there
+
+are many operations like initialization
+
+that are intentionally left out of the
+
+embedded Hal so while our crate used a
+
+parts Constructor to generate the port
+
+zero peripheral other crates use a trait
+
+extension on the underlying pack
+
+peripheral to transform it into its Hal
+
+representation using a constrain or
+
+split method all right I've spent a lot
+
+of time talking about the how but the
+
+embedded rust ecosystem has one more
+
+less common abstraction that you might
+
+encounter the board support package
+
+the board support package is pretty much
+
+what it sounds like a crate that knows
+
+how your microcontroller is connected to
+
+other components on your board and so it
+
+can do things like correctly initialize
+
+your pins and give them appropriate
+
+names it's typically a pretty thin layer
+
+on top of your Hal but may also include
+
+new abstractions for some parts on your
+
+board so let's see what this looks like
+
+with the microbit V2 bsp crate
+
+they've got a few examples including one
+
+for a how
+
+Blinky and it looks pretty
+
+straightforward now we're taking the
+
+board instead of the pack peripherals
+
+using a timer from the Hal for more
+
+precise delay timing the row and column
+
+pins have been placed into a display pin
+
+structure and this example is even
+
+blinking the Same Led we've been
+
+using so let's get this imported and
+
+take a closer
+
+look and we'll just use their example
+
+code let's see what board initialization
+
+actually looks
+
+like okay it's taking ownership of the
+
+pack peripherals and creating named how
+
+pins and grouping them by
+
+function initializing the input and
+
+output
+
+pins and making any non- gpio pack
+
+peripherals available to the board owner
+
+so let's give it a
+
+spin nice
+
+for this Blinky example it's not much
+
+different from our Hal implementation
+
+however you could imagine if we were
+
+using a lot of peripherals not having to
+
+configure each pin would be pretty handy
+
+there is one more thing I'd like to show
+
+you about this crate which is that it
+
+has a display type that can be used to
+
+control the entire 5x5 LED Matrix and
+
+they've got an example of that as well
+
+so let's get that into vs code and have
+
+a closer
+
+look this creates a display object by
+
+consuming our display pins and then uses
+
+a 2d array of zeros and ones to
+
+represent which LEDs are off and on in
+
+our rows and columns each symbol is
+
+displayed in sequence using a show
+
+method and this is actually doing a bit
+
+of work for us because we've only got
+
+one pin to control each row and column
+
+10 pins for 25 LEDs so for this to work
+
+we have to cheat a little we only
+
+briefly light up one row at a time and
+
+then the next and the next and so on at
+
+a rate fast enough where your eye and
+
+hopefully the camera can't tell the
+
+difference and just sees the image as
+
+static okay enough talk time for maximum
+
+Blinky that is awesome we did it we
+
+found probably too many ways to light up
+
+an LED and in the process got familiar
+
+with how to control a peripheral using
+
+various types of crates in the embedded
+
+rust ecosystem so that's a wrap for
+
+today please hit that like And subscribe
+
+button before you go thanks for watching
+
+and I'll see you in the next one
+
+[Music]
+

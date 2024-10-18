@@ -1,4 +1,9 @@
 {
-  "markdown.marp.themes": ["./assets/theme.css"],
-  "markdown.marp.enableHtml": true
+    "markdown.marp.themes": [
+        "./slides/assets/theme.css"
+    ],
+    "markdown.marp.enableHtml": true,
+    "rust-analyzer.linkedProjects": [
+        "example_project/Cargo.toml",
+    ]
 }
