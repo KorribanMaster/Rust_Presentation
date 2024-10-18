@@ -45,7 +45,7 @@ fn main() -> ! {
                 write_volatile(GPIOB_ODR, current_state & !(1 << 7));
             }
 
-            // 7. Perform 800,000 NOP operations (simple delay).
+            // 7. Perform 100,000 NOP operations (simple delay).
             for _ in 0..100_000 {
                 nop();
             }
