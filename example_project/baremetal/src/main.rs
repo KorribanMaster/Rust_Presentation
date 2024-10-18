@@ -6,7 +6,7 @@ use cortex_m_rt::entry;
 use panic_halt as _; // Panic handler
 use core::ptr::{read_volatile, write_volatile};
 
-const RCC_AHB1ENR: *mut u32 = 0x4002_3800 as *mut u32; // RCC AHB1 peripheral clock enable register
+const RCC_AHB1ENR: *mut u32 = 0x4002_3830 as *mut u32; // RCC AHB1 peripheral clock enable register
 const GPIOB_MODER: *mut u32 = 0x4002_0400 as *mut u32; // GPIOB mode register
 const GPIOB_OTYPER: *mut u32 = 0x4002_0404 as *mut u32; // GPIOB output type register
 const GPIOB_OSPEEDR: *mut u32 = 0x4002_0408 as *mut u32; // GPIOB output speed register
@@ -46,7 +46,7 @@ fn main() -> ! {
             }
 
             // 7. Perform 800,000 NOP operations (simple delay).
-            for _ in 0..800_000 {
+            for _ in 0..100_000 {
                 nop();
             }
         }

@@ -4,3 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+cortex-m = "0.7.4"
+cortex-m-rt = "0.7.2"
+stm32f7xx-hal = {version = "0.8.0", features = ["stm32f767"]}
+panic-halt = "0.2.0"  # Or choose any panic handler you like
+

@@ -12,8 +12,8 @@ use panic_halt as _;
 fn main() -> ! {
     let p = pac::Peripherals::take().unwrap();
 
-    let gpioc = p.GPIOB.split();
-    let mut led = gpioc.pb7.into_push_pull_output();
+    let gpiob = p.GPIOB.split();
+    let mut led = gpiob.pb7.into_push_pull_output();
 
     loop {
         for _ in 0..10_000 {
