@@ -21,11 +21,10 @@ paginate: true
   }
 </style>
 
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
-
 ---
 
 # Introduction
+
 ## Blinking an LED with Embedded Rust
 
 - Introduction to embedded Rust development
@@ -39,23 +38,6 @@ paginate: true
 - Blinking an LED is the "Hello World" of embedded programming
 - We will use a **Nucleo-144** with an STM32F767 microcontroller
 - To blink an LED, control pins Row 1 and Column 1 by setting digital outputs
-
----
-
-# Microcontroller Pin Configuration
-
-- Use GPIO to control pins
-- Identify pins using board schematics:
-  - **User LD2**: a blue user LED is connected to PB7.
-  - **User LD3**: a red user LED is connected to PB14
-- GPIO pins are configured by writing to memory-mapped registers
-- Memory safety: Use Rust's `unsafe` block to write directly to registers
-
-```rust
-unsafe {
-    core::ptr::write_volatile(GPIO_PORT_21, VALUE);
-}
-```
 
 ---
 
@@ -76,17 +58,56 @@ unsafe {
 
 ---
 
+# Microcontroller Pin Configuration
+
+- Use GPIO to control pins
+- Identify pins using board schematics:
+  - **User LD2**: a blue user LED is connected to PB7.
+- GPIO pins are configured by writing to memory-mapped registers
+- Memory safety: Use Rust's `unsafe` block to write directly to registers
+
+```rust
+const GPIOB_ODR: *mut u32 = 0x4002_0414 as *mut u32; // GPIOB output data register
+unsafe {
+  let current_state = read_volatile(GPIOB_ODR);
+  if current_state & (1 << 7) == 0 {
+      // Set PB7 high
+      write_volatile(GPIOB_ODR, current_state | (1 << 7));
+  } else {
+      // Set PB7 low
+      write_volatile(GPIOB_ODR, current_state & !(1 << 7));
+  }
+}
+```
+
+---
+
 # Peripheral Access Crates (PAC)
 
 - PACs provide access to microcontroller peripherals
 - These crates offer safer abstractions over low-level operations
 - Automatically generated from **SVD** files (standardized peripheral descriptions)
 
-Example:
+---
+
+# Peripheral Access Crates (PAC)
+
+## Example
+
 ```rust
 let peripherals = pac::Peripherals::take().unwrap();
-let gpio = &peripherals.GPIO;
+loop {
+        if dp.GPIOB.odr.read().odr7().bit_is_clear() {
+            // Set PB7 high
+            dp.GPIOB.bsrr.write(|w| w.bs7().set_bit());
+        } else {
+            // Set PB7 low
+            dp.GPIOB.bsrr.write(|w| w.br7().set_bit());
+        }
+}
+
 ```
+
 - Register access is now type-safe and more readable
 
 ---
@@ -139,4 +160,3 @@ led.on();
 - Started with low-level register manipulation using `unsafe` Rust
 - Moved up to safer abstractions using PAC, HAL, and BSP
 - Each layer offers more safety and ease of use, while maintaining performance
-
