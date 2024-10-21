@@ -21,8 +21,6 @@ paginate: true
   }
 </style>
 
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
-
 ---
 
 # Why Rust?
@@ -31,9 +29,9 @@ paginate: true
 
 - Memory safety without a garbage collector
 - Concurrency without data races
+- Modern syntax features in a system level language
+- C like performance
 - Growing popularity: Rust has topped StackOverflow’s “Most Loved” language list since 2016
-
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
 
 ---
 
@@ -42,10 +40,8 @@ paginate: true
 **Familiar Concepts for C Developers**
 
 - Systems-level control over memory and hardware
-- Manual memory management, though Rust automates some of it with ownership
 - No garbage collector, like C
-
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
+- Compiled language
 
 ---
 
@@ -68,13 +64,10 @@ paginate: true
     // Rust code example
     let x = Box::new(10); // No need to free manually
   }
-  // x was dropped
   ```
 
-  Rust ensures memory is freed automatically when the variable goes out of scope
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
-
 ---
+
 
 # Borrowing in Rust
 
@@ -114,8 +107,6 @@ paginate: true
     println!("{}", x); // 11
     ```
 
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
-
 ---
 
 # Borrowing Rules
@@ -132,9 +123,93 @@ paginate: true
     ```
 
 - The borrow checker ensures these rules at compile time.
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
 
 ---
+
+# Rust’s Memory Safety: Lifetimes
+
+  ```rust
+  fn main() {
+      let r;
+
+      {
+          let x = 5;
+          r = &x;
+      }
+      // x was dropped
+      println!("r: {r}"); 
+      // error x does not live long enough
+  }
+  ```
+
+---
+
+# Lifetimes explained
+
+```text
+error[E0597]: `x` does not live long enough
+ --> src/main.rs:6:13
+  |
+5 |         let x = 5;
+  |             - binding `x` declared here
+6 |         r = &x;
+  |             ^^ borrowed value does not live long enough
+7 |     }
+  |     - `x` dropped here while still borrowed
+8 |
+9 |     println!("r: {r}");
+  |                  --- borrow later used here
+  ```
+
+  Rust ensures memory is freed automatically when the variable goes out of scope
+
+---
+# Lifetime problems
+
+- The compiler sometimes needs help
+- Example:
+
+ ```rust
+ fn main() {
+  let string1 = String::from("abcd");
+  let string2 = String::from("xyz");
+  let result = longest(string1.as_str(), string2.as_str());
+  println!("The longest string is {}", result);
+ }
+
+fn longest(x: &str, y: &str) -> &str {
+  if x.len() > y.len() {
+    x
+  } else {
+    y
+  }
+}
+ ```
+
+---
+
+# Lifetimes
+
+- Fixed:
+
+ ```rust
+ fn main() {
+  let string1 = String::from("abcd");
+  let string2 = String::from("xyz");
+  let result = longest(string1.as_str(), string2.as_str());
+  println!("The longest string is {}", result);
+ }
+
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+  if x.len() > y.len() {
+    x
+  } else {
+    y
+  }
+}
+ ```
+
+ ---
 
 # Concurrency in Rust vs C
 
@@ -153,8 +228,6 @@ paginate: true
 
   Rust's compiler enforces data race prevention at compile-time
 
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
-
 ---
 
 # Zero-Cost Abstractions
@@ -170,7 +243,6 @@ paginate: true
   ```
 
   This abstraction performs just as well as if you wrote the loop manually
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
 
 ---
 
@@ -191,15 +263,12 @@ paginate: true
   }
   ```
 
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
-
 ---
 
 # Rust’s Detailed Error Reporting
 
 - **rustc** provides very informative error messages, making it easier to debug issues.
 - Helps developers fix issues **faster** and **safely**.
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
 
 ---
 
@@ -218,7 +287,6 @@ int main() {
 - Fails at runtime
 - **Error**: `Segmentation fault (core dumped)`
 - Minimal information, doesn't explain why or where it failed.
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
 
 ---
 
@@ -231,8 +299,6 @@ fn main() {
     let r2 = &mut x; // ERROR: cannot borrow `x` as mutable
 }
 ```
-
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
 
 ---
 
@@ -253,7 +319,6 @@ error[E0502]: cannot borrow `x` as mutable because it is also borrowed as immuta
 - Error is caught at compile time
 - Provides **line numbers** and clear explanations of **why** the error occurred.
 - Suggests a solution and directs to `rustc --explain [ERROR_CODE]` for more details.
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
 
 ---
 
@@ -266,8 +331,6 @@ error[E0502]: cannot borrow `x` as mutable because it is also borrowed as immuta
   - Integrated tools for benchmarking, fuzzing, and formatting
   - Rich ecosystem via `crates.io`
   
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
-
 ---
 
 # Typical Rust Project Structure
@@ -334,7 +397,7 @@ serde = "1.0"  # Example dependency
 
 ---
 
-### Conclusion
+# Conclusion
 
 **Why Rust is Worth Exploring for C Developers**
 
@@ -343,6 +406,11 @@ serde = "1.0"  # Example dependency
 - Increasingly adopted in industry for reliability and concurrency
   - Rust offers solutions to longstanding challenges in C development like memory safety and concurrency bugs.
 - Rich ecosystem
-<img src="./assets/baxter_logo.png" alt="Logo" class="logo">
 
 ---
+<!-- _class: lead -->
+<!-- paginate: skip -->
+
+# Thank you for your attention
+
+![bg right:33% contain](./assets/Rust_programming_language_black_logo.svg)
