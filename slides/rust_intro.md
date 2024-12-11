@@ -47,6 +47,8 @@ paginate: true
 
 # This talk in a Nutshell
 
+**Learning by Example**
+
 - As many Rust snippet as possible.
 - This is going to be fast.
 
@@ -1133,6 +1135,7 @@ serde = "1.0"  # Example dependency
 - **Community-driven ecosystem**: Crates.io hosts a wide range of packages for use in Rust projects.
 
 ---
+
 # Attribution
 
 This talk is heavily based on:
@@ -1159,5 +1162,10 @@ This talk is heavily based on:
 <!-- paginate: skip -->
 
 # Thank you for your attention
+
+Continue learning Rust
+- [rust book](https://doc.rust-lang.org/book/)
+- [rustlings](https://github.com/rust-lang/rustlings)
+- [rust by example](https://doc.rust-lang.org/rust-by-example/)
 
 ![bg right:33% contain](./assets/Rust_programming_language_black_logo.svg)
