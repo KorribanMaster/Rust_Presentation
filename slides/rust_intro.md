@@ -45,14 +45,11 @@ paginate: true
 
 ---
 
-# Attribution
+# This talk in a Nutshell
 
-This talk is heavily based on:
+- As many Rust snippet as possible.
+- This is going to be fast.
 
-![fasterthanlime](https://fasterthanli.me/img/logo-round-2.png)
-
-- [fasterthanli.me/articles/a-half-hour-to-learn-rust](https://fasterthanli.me/articles/a-half-hour-to-learn-rust)
-- [Rust for the impatient](https://www.youtube.com/watch?v=br3GIIQeefY)
 
 ---
 
@@ -1134,6 +1131,16 @@ serde = "1.0"  # Example dependency
 - **All-in-one tool**: From building to testing, Cargo simplifies Rust development.
 - **Efficient dependency management**: Cargo handles versioning and builds with ease.
 - **Community-driven ecosystem**: Crates.io hosts a wide range of packages for use in Rust projects.
+
+---
+# Attribution
+
+This talk is heavily based on:
+
+![fasterthanlime](https://fasterthanli.me/img/logo-round-2.png)
+
+- [fasterthanli.me/articles/a-half-hour-to-learn-rust](https://fasterthanli.me/articles/a-half-hour-to-learn-rust)
+- [Rust for the impatient](https://www.youtube.com/watch?v=br3GIIQeefY)
 
 ---
 
