@@ -45,6 +45,805 @@ paginate: true
 
 ---
 
+# Attribution
+
+This talk is heavily based on:
+
+![fasterthanlime](https://fasterthanli.me/img/logo-round-2.png)
+
+- [fasterthanli.me/articles/a-half-hour-to-learn-rust](https://fasterthanli.me/articles/a-half-hour-to-learn-rust)
+- [Rust for the impatient](https://www.youtube.com/watch?v=br3GIIQeefY)
+
+---
+
+# Install Rust
+
+## `curl https://sh.rustup.rs | sh`
+
+(or visit [rustup.rs](https://www.rustup.rs))
+
+---
+
+# Basic Rust
+
+`let` introduces a variable binding:
+
+```rust
+let x;  // declare "x"
+x = 42; // assign 42 to "x"
+```
+
+This can be written as a single line
+
+```rust
+let x = 42;
+```
+
+---
+
+# Basic Rust
+
+Types can be annotated
+
+```rust
+let x: i32;
+x = 42;
+```
+
+This can also be written as a single line
+
+```rust
+let x: i32 = 42;
+```
+
+---
+
+![./assets/type_promotion.png](./assets/type_promotion.png)
+
+---
+
+# Basic Rust
+
+You can't access uninitialised variables
+
+```rust
+let x;
+foobar(x); 
+// borrow of possibly-uninitialized `x`
+x = 42;
+```
+
+However, doing this is completely fine:
+
+```rust
+let x;
+x = 42;
+foobar(x); 
+```
+
+---
+
+# Basic Rust
+
+```rust
+let pair = ('a', 17);
+pair.0; // this is 'a'
+pair.1; // this is 17
+```
+
+Or, with explicit type annotation:
+
+```rust
+let pair: (char, i32) = ('a', 17);
+```
+
+---
+
+# Basic Rust
+
+```rust
+let (some_char, some_int) = ('a', 17);
+assert!(some_char, 'a');
+assert!(some_int, 17);
+```
+
+```rust
+let (l, r) = slice.split_at(middle);
+```
+
+```rust
+let (_, right) = slice.split_at(middle);
+```
+
+---
+
+# Basic Rust
+
+```rust
+let x = 3;
+let y = 5;
+let z = y + x;
+```
+
+The semi-colon marks the end of a statement.
+
+---
+
+# Basic Rust
+
+Statements semicolons can span multiple lines
+
+```rust
+let x = vec![1, 2, 3, 4, 5, 6, 7, 8]
+    .iter()
+    .map(|x| x + 3)
+    .fold(0, |x, y| x + y);
+```
+
+---
+
+# Basic Rust
+
+`f -> void`
+
+```rust
+fn greet() {
+    println!("Hi there!");
+}
+```
+
+`f -> i32`
+
+```rust
+fn fair_dice_roll() -> i32 {
+    4
+}
+```
+
+---
+
+# Basic Rust
+
+```rust
+let x = "out";
+{
+    // this is a different `x`
+    let x = "in";
+    println!("{}", x);
+}
+println!("{}", x);
+```
+
+This prints "in", then "out"
+
+---
+
+# Basic Rust
+
+```rust
+// this:
+let x = 42;
+
+// is equivalent to this:
+let x = { 42 };
+```
+
+---
+
+# Basic Rust
+
+```rust
+let x = {
+    let y = 1; // first statement
+    let z = 2; // second statement
+    y + z // this is the *tail* 
+};
+```
+
+---
+
+# Basic Rust
+
+```rust
+fn fair_dice_roll() -> i32 {
+    return 4;
+}
+
+fn fair_dice_roll() -> i32 {
+    4
+}
+```
+
+these are equivalent
+
+---
+
+# Basic Rust
+
+```rust
+fn fair_dice_roll() -> i32 {
+    if feeling_lucky {
+        6
+    } else {
+        4
+    }
+}
+```
+
+if conditionals are also expressions
+
+---
+
+# Basic Rust
+
+```rust
+fn fair_dice_roll() -> i32 {
+    match feeling_lucky {
+        true  => 6,
+        false => 4,
+    }
+}
+```
+
+A match is also an expression, not a statement
+
+---
+
+# Basic Rust
+
+Dots are typically used to access fields of a value:
+
+```rust
+let a = (10, 20);
+a.0; // == 10
+
+let amos = get_some_struct();
+amos.nickname; // == "fasterthanlime"
+```
+
+Or call a method on a value:
+
+```rust
+let nick = "fasterthanlime";
+nick.len(); // this is 14
+```
+
+---
+
+# Namespaces
+
+```rust
+let least = std::cmp::min(3, 8);
+```
+
+Approximately:
+
+```rust
+crate::file::function
+```
+
+---
+
+# Namespaces
+
+```rust
+use std::cmp::min;
+
+let least = min(7, 1); // this is 1
+```
+
+---
+
+# Namespaces
+
+```rust
+let x = "amos".len(); // 4
+let x = str::len("amos"); // also 4
+```
+
+Types are namespaces too, and methods can be called as regular functions:
+str is a primitive type, but many non-primitive types are also in scope by default
+
+---
+
+Structs are declared with the struct keyword:
+
+```rust
+struct Number {
+    odd: bool,
+    value: i32,
+}
+```
+
+They can be initialised using literals:
+
+```rust
+let x = Number { odd: false, value: 2 };
+let y = Number { value: 3, odd: true};
+// the order does not matter
+```
+
+---
+
+# Structs
+
+```rust
+struct Number {
+    odd: bool,
+    value: i32,
+}
+```
+
+---
+
+# Structs
+
+```rust
+impl Number {
+    fn is_positive(self) -> bool {
+        self.value > 0
+    }
+}
+```
+
+You can declare methods on your own types
+
+---
+
+# Structs
+
+```rust
+let minus_two = Number {
+    odd: false,
+    value: -2,
+};
+println!("{}", minus_two.is_positive());
+```
+
+And then we can use our new methods like usual
+
+---
+
+# Generic types
+
+Functions can be generic:
+
+```rust
+fn foobar<T>(arg: T) {
+    // work with `arg`
+}
+```
+
+```rust
+fn foobar<L, R>(left: L, right: R) {
+    // work with `left` and `right`
+}
+```
+
+---
+
+# Generic types
+
+Structs can be generic too:
+
+```rust
+struct Pair<T> {
+    a: T,
+    b: T,
+}
+```
+
+```rust
+let p1 = Pair { a: 3, b: 9 };
+// = Pair<i32>
+let p2 = Pair { a: true, b: false };
+// = Pair<bool>
+```
+
+Note that in this case, both a and b must be of the same type, T.
+
+---
+
+# Generic types
+
+```rust
+let mut v1 = Vec::new();
+v1.push(1);
+let mut v2 = Vec::new();
+v2.push(false);
+// v1 == Vec<i32>
+// v2 == Vec<bool>
+```
+
+The standard library type Vec (Which is a heap-allocated array), is generic.
+
+v1 is a vector of integers
+v2 is a vector of booleans
+
+---
+
+# Generic types
+
+```rust
+fn main() {
+    let v1 = vec![1, 2, 3];
+    let v2 = vec![true, false, true];
+}
+```
+
+Vec comes with a macro that gives us more or less "vec literals"
+v1 is a vector of integers (i32 as usual)
+and v2 is a vector of booleans
+
+---
+
+# Macros
+
+- `name!()`
+- `name![]`
+- `name!{}`
+
+All of these invoke a macro. Macros just expand to regular code.
+You can recognise them by the bang at the end of the name.
+
+---
+
+# Macros
+
+`println` is a macro
+
+```rust
+fn main() {
+    println!("{}", "Hello there!");
+}
+```
+
+```rust
+fn main() {
+    use std::io::{self, Write};
+    io::stdout()
+        .lock()
+        .write_all(b"Hello there!\n")
+        .unwrap();
+}
+```
+
+---
+
+# Error Handling
+
+```rust
+fn main() {
+    panic!("This panics");
+}
+```
+
+error
+
+```markdown
+thread 'main' panicked at 'This panics', src/main.rs:3:5
+```
+
+panic is also a macro. It violently stops execution with an error message, and the file name and line number of the error.
+
+---
+
+# Error Handling
+
+```rust
+fn main() {
+    let o1: Option<i32> = Some(128);
+    o1.unwrap(); // this is fine
+
+    let o2: Option<i32> = None;
+    o2.unwrap(); // this panics!
+}
+```
+
+error
+
+```markdown
+thread 'main' panicked at
+'called `Option::unwrap()` on a `None` value', 
+src/libcore/option.rs:378:21
+```
+
+---
+
+# Option
+
+```rust
+enum Option<T> {
+    None,
+    Some(T),
+}
+```
+
+```rust
+impl<T> Option<T> {
+    fn unwrap(self) -> T {
+        match self {
+            Self::Some(t) => t,
+            Self::None => panic!(...),
+}}}
+```
+
+Option is not a struct - it's an enum, with two variants.
+It panics when unwrapped and containing an error.
+
+---
+
+# Result
+
+```rust
+enum Result<T, E> {
+    Ok(T),
+    Err(E),
+}
+```
+
+Result is also an enum, it can either contain something, or an error:
+It also panics when unwrapped and containing an error.
+
+---
+
+# Error Handling
+
+```rust
+let s1 = str::from_utf8(
+    &[240, 159, 141, 137]
+);
+println!("{:?}", s1);
+```
+
+```markdown
+`Ok("🍉")`
+```
+
+```rust
+let s2 = str::from_utf8(&[195, 40]);
+println!("{:?}", s2);
+```
+
+```markdown
+`OErr(Utf8Error { valid_up_to: 0, error_len: Some(1) })`
+```
+
+Functions that can fail typically return a Result
+
+---
+
+# Error Handling
+
+```rust
+let s = str::from_utf8(
+    &[240, 159, 141, 137]).unwrap();
+println!("{:?}", s);
+```
+
+```markdown
+"🍉"
+```
+
+whereas...
+
+```rust
+str::from_utf8(&[195, 40]).unwrap();
+```
+
+```markdown
+thread 'main' panicked at
+'called `Result::unwrap()` on an `Err` value: 
+`Utf8Error { valid_up_to: 0, error_len: Some(1) }`'
+```
+
+---
+
+# Error Handling
+
+```rust
+let s = str::from_utf8(&[195, 40])
+.expect("valid utf-8");
+```
+
+error
+
+```markdown
+thread 'main' panicked at 'valid utf-8:
+`Utf8Error{ valid_up_to: 0, error_len: Some(1) }`'
+```
+
+Or you can use .expect(), for a custom error message before panicking.
+
+---
+
+# Error Handling
+
+```rust
+let melon = &[240, 159, 141, 137];
+match str::from_utf8(melon) {
+    Ok(s) => println!("{}", s),
+    Err(e) => panic!(e),
+}
+// prints 🍉
+```
+
+You can also match and handle the error (or in this example, panic anyway!)
+
+---
+
+# Error Handling
+
+```rust
+let melon = &[240, 159, 141, 137];
+match std::str::from_utf8(melon) {
+    Ok(s) => println!("{}", s),
+    Err(e) => return Err(e),
+}
+Ok(())
+```
+
+```markdown
+(assuming inside `fn -> Result<(), std::str::Utf8Error>`)
+```
+
+---
+
+# Error Handling
+
+```rust
+let melon = &[240, 159, 141, 137];
+let s = str::from_utf8(melon)?;
+println!("{}", s);
+Ok(())
+```
+
+The question mark operator, at the end of Line 2, does the exact same thing as the larger match statement on the previous slide.
+This is the normal rust error pattern in application code, where you're trying to just write the happy path, though the previous options are available to you when you need them.
+
+---
+
+# Iterators
+
+```rust
+let natural_numbers = 1..;
+```
+
+---
+
+# Iterators
+
+```rust
+// 0 or greater
+(0..).contains(&100); // true
+// 20 or less than 20
+(..=20).contains(&20)); // true
+// only 3, 4, 5
+(3..6).contains(&4)); // true
+```
+
+---
+
+# Iterators
+
+```rust
+fn main() {
+    for i in vec![52, 49, 21] {
+        println!("I like number {}", i);
+    }
+}
+```
+
+output
+
+```markdown
+I like number 52
+I like number 49
+I like number 21
+```
+
+---
+
+# Iterators
+
+```rust
+fn main() {
+  for i in &[52, 49, 21] {
+    println!("I like number {}", i);
+  }
+}
+```
+
+output
+
+```markdown
+I like number 52
+I like number 49
+I like number 21
+```
+
+---
+
+# Iterators
+
+Or a slice
+
+```rust
+fn main() {
+    for c in "rust".chars() {
+        println!("Give me a {}", c);
+    }
+}
+```
+
+output
+
+```markdown
+Give me a r
+Give me a u
+Give me a s
+Give me a t
+```
+
+---
+
+# Rust’s Detailed Error Reporting
+
+- **rustc** provides very informative error messages, making it easier to debug issues.
+- Helps developers fix issues **faster** and **safely**.
+
+---
+
+## Example: Error in Rust vs C
+
+### C Error
+
+```c
+int main() {
+    int* x = NULL;
+    *x = 10; // Segmentation fault
+    return 0;
+}
+```
+
+- Fails at runtime
+- **Error**: `Segmentation fault (core dumped)`
+- Minimal information, doesn't explain why or where it failed.
+
+---
+
+## Rust Error Example
+
+```rust
+fn main() {
+    let x = 10;
+    let r1 = &x;
+    let r2 = &mut x; // ERROR: cannot borrow `x` as mutable
+}
+```
+
+---
+
+### Rust's `rustc` Error
+
+```text
+error[E0502]: cannot borrow `x` as mutable because it is also borrowed as immutable
+ --> src/main.rs:4:14
+  |
+3 |     let r1 = &x;
+  |               -- immutable borrow occurs here
+4 |     let r2 = &mut x;
+  |              ^^^^^^ mutable borrow occurs here
+5 |     println!("{}", r1);
+  |                    -- immutable borrow later used here
+```
+
+- Error is caught at compile time
+- Provides **line numbers** and clear explanations of **why** the error occurred.
+- Suggests a solution and directs to `rustc --explain [ERROR_CODE]` for more details.
+
+---
+
 # Rust’s Memory Safety: Ownership and Borrowing
 
 **C’s Manual Memory vs Rust’s Automated Approach**
@@ -67,7 +866,6 @@ paginate: true
   ```
 
 ---
-
 
 # Borrowing in Rust
 
@@ -164,6 +962,7 @@ error[E0597]: `x` does not live long enough
   Rust ensures memory is freed automatically when the variable goes out of scope
 
 ---
+
 # Lifetime problems
 
 - The compiler sometimes needs help
@@ -262,65 +1061,6 @@ fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
       }
   }
   ```
-
----
-
-# Rust’s Detailed Error Reporting
-
-- **rustc** provides very informative error messages, making it easier to debug issues.
-- Helps developers fix issues **faster** and **safely**.
-
----
-
-## Example: Error in Rust vs C
-
-### C Error
-
-```c
-int main() {
-    int* x = NULL;
-    *x = 10; // Segmentation fault
-    return 0;
-}
-```
-
-- Fails at runtime
-- **Error**: `Segmentation fault (core dumped)`
-- Minimal information, doesn't explain why or where it failed.
-
----
-
-## Rust Error Example
-
-```rust
-fn main() {
-    let x = 10;
-    let r1 = &x;
-    let r2 = &mut x; // ERROR: cannot borrow `x` as mutable
-}
-```
-
----
-
-### Rust's `rustc` Error
-
-```text
-error[E0502]: cannot borrow `x` as mutable because it is also borrowed as immutable
- --> src/main.rs:4:14
-  |
-3 |     let r1 = &x;
-  |               -- immutable borrow occurs here
-4 |     let r2 = &mut x;
-  |              ^^^^^^ mutable borrow occurs here
-5 |     println!("{}", r1);
-  |                    -- immutable borrow later used here
-```
-
-- Error is caught at compile time
-- Provides **line numbers** and clear explanations of **why** the error occurred.
-- Suggests a solution and directs to `rustc --explain [ERROR_CODE]` for more details.
-
----
 
 ### Tooling and Ecosystem
 
