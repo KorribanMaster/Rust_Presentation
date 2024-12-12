@@ -1,0 +1,21 @@
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+# replace STM32F429ZITx with your chip as listed in `probe-rs chip list`
+runner = "probe-rs run --chip STM32F777ZITx"
+rustflags = [
+  "-C", "linker=flip-link",
+  "-C", "link-arg=-Tlink.x",
+  "-C", "link-arg=--nmagic",
+
+  # --- ADD following new flag ---
+  "-C", "link-arg=-Tdefmt.x",
+]
+
+[build]
+target = "thumbv7em-none-eabihf"
+
+[env]
+DEFMT_LOG = "trace"
+
+[alias]
+rb = "run --bin"
+rrb = "run --release --bin"

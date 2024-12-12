@@ -1,2 +1,3 @@
 [workspace]
-members = ["baremetal", "pac", "hal"]
+members = ["baremetal", "pac", "hal", "defmt-example", "bsp", "interrupt"]
+resolver = "2"
