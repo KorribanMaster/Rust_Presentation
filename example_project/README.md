@@ -60,7 +60,7 @@ Further reading:
 
 ### 1. Set `probe-rs` chip
 
-Pick a chip from ` probe-rs chip list` and enter it into `.cargo/config.toml` of the respective crate you ar working on.
+Pick a chip from `probe-rs chip list` and enter it into `.cargo/config.toml` of the respective crate you ar working on.
 
 If, for example, you have a nRF52840 Development Kit, replace `STM32F767ZI` with `nRF52840_xxAA`.
 

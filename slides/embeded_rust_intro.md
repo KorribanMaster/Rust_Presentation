@@ -339,6 +339,7 @@ impl Board {
     }
 }
 ```
+
 ---
 
 # Abstract the underlying hardware
@@ -435,13 +436,14 @@ fn EXTI15_10() {
 }
 ```
 
---- 
+---
 
 # Synchronization with `SEMAPHORE`
 
 ```rust
 static SEMAPHORE: Mutex<Cell<bool>> = Mutex::new(Cell::new(true));
 ```
+
 - The semaphore is used for synchronization between the main thread and the interrupt handler.
 - It is a boolean flag wrapped in a `Cell` and protected by a `Mutex` to ensure safe access from both the main thread and the interrupt handler.
 - The main thread checks the semaphore to determine if the interrupt has fired.
@@ -450,6 +452,7 @@ static SEMAPHORE: Mutex<Cell<bool>> = Mutex::new(Cell::new(true));
 ---
 
 # The `BUTTON_PIN`
+
 ```rust
 static BUTTON_PIN: Mutex<RefCell<Option<PC13<Input<Floating>>>>> = Mutex::new(RefCell::new(None));
 ```
@@ -457,9 +460,10 @@ static BUTTON_PIN: Mutex<RefCell<Option<PC13<Input<Floating>>>>> = Mutex::new(Re
 - The button pin represents the GPIO pin connected to the push button.
 - It is wrapped in a `RefCell` and protected by a `Mutex` to allow mutable access from both the main thread and the interrupt handler.
 - It has to be static and the pin intialization happens at runtime thus we have to wrap it in an `Option`
+
 ---
 
-# Logging 
+# Logging
 
 - Logging is an integral part to Software development
 - Embedded systems logging can use substantial amount of resources
@@ -486,9 +490,11 @@ static BUTTON_PIN: Mutex<RefCell<Option<PC13<Input<Floating>>>>> = Mutex::new(Re
 # Use rtt with Rust
 
 - Add the rtt-target crate
+
 ```shell
 cargo add rtt-target
 ```
+
 - and use it in your main() function
 
 ```rust
@@ -501,6 +507,7 @@ fn main() {
     }
 }
 ```
+
 ---
 
 # Size considerations
@@ -527,6 +534,7 @@ section             size        addr
 Total               7663
 
 ```
+
 ---
 
 # Adding floats
@@ -565,9 +573,11 @@ Total               35631
 # Setting Up defmt
 
 - Add `defmt` as a dependency:
+
   ```sh
-  $ cargo add defmt
+  cargo add defmt
   ```
+
 - Many crates provide a defmt feature to provide logging for their function and formatting information for the provided types
 
 ---
@@ -589,11 +599,15 @@ rustflags = [
   "-C", "link-arg=-Tdefmt.x",
 ]
 ```
+
 ---
+
 # Global Logger
 
 - The application must link to or define a global_logger.
+
 ### Provided Global Loggers
+
 - `defmt-rtt`: Logs over RTT.
 - `defmt-itm`: Logs over ITM (Instrumentation Trace Macrocell) stimulus port 0.
 - `defmt-semihosting`: Logs over semihosting (for testing on QEMU).
@@ -604,6 +618,7 @@ rustflags = [
 
 - `defmt` implements logging for all standard types
 - If your struct is composed only of types where the `Format`trait you can derive it
+
 ```rust
 use defmt::Format; // <- derive attribute
 
@@ -613,6 +628,7 @@ struct S1<T> {
     y: T,
 }
 ```
+
 ---
 
 # Size with defmt
