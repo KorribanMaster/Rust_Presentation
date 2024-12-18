@@ -1,3 +1,3 @@
 [workspace]
-members = ["01-baremetal", "02-pac", "03-hal", "06-defmt-example", "04-bsp", "05-interrupt"]
+members = ["01-baremetal", "02-pac", "03-hal", "07-defmt-example", "04-bsp", "05-interrupt", "06-rtt-logging"]
 resolver = "2"
