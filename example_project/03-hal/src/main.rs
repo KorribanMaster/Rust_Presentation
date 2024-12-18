@@ -2,11 +2,8 @@
 #![no_main]
 
 use cortex_m_rt::entry;
-use stm32f7xx_hal::{
-    prelude::*,
-    pac,
-};
 use panic_halt as _;
+use stm32f7xx_hal::{pac, prelude::*};
 
 #[entry]
 fn main() -> ! {

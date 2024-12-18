@@ -1,9 +1,6 @@
-use stm32f7xx_hal::{
-    prelude::*,
-    pac,
-};
-use embedded_hal::digital::v2::{OutputPin, InputPin};
 use core::convert::Infallible;
+use embedded_hal::digital::v2::{InputPin, OutputPin};
+use stm32f7xx_hal::{pac, prelude::*};
 extern crate alloc;
 use alloc::boxed::Box;
 pub struct Board {
@@ -12,6 +9,12 @@ pub struct Board {
     pub led3: Led,
     pub button: Button,
 }
+impl Default for Board {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Board {
     pub fn new() -> Self {
         let p = pac::Peripherals::take().unwrap();
@@ -25,34 +28,38 @@ impl Board {
         let led2 = Led::new(pin);
         let pin = gpiob.pb14.into_push_pull_output();
         let led3 = Led::new(pin);
-        Self { led1, led2, led3, button }
-
+        Self {
+            led1,
+            led2,
+            led3,
+            button,
+        }
     }
 }
 
 pub struct Led {
-    pin: Box< dyn OutputPin<Error = Infallible>>
+    pin: Box<dyn OutputPin<Error = Infallible>>,
 }
 
 impl Led {
-    pub fn new(pin: impl OutputPin< Error = Infallible> + 'static) -> Self{
+    pub fn new(pin: impl OutputPin<Error = Infallible> + 'static) -> Self {
         Led { pin: Box::new(pin) }
     }
-    pub fn on(&mut self){
+    pub fn on(&mut self) {
         let _ = self.pin.set_high();
     }
-    pub fn off(&mut self){
+    pub fn off(&mut self) {
         let _ = self.pin.set_low();
     }
 }
 
 pub struct Button {
-    pin: Box< dyn InputPin<Error = Infallible>>
+    pin: Box<dyn InputPin<Error = Infallible>>,
 }
 
 impl Button {
-    pub fn new(pin: impl InputPin< Error = Infallible> + 'static) -> Self {
-        Self {pin: Box::new(pin)}
+    pub fn new(pin: impl InputPin<Error = Infallible> + 'static) -> Self {
+        Self { pin: Box::new(pin) }
     }
     pub fn pressed(&self) -> bool {
         self.pin.is_high().expect("Infallible")

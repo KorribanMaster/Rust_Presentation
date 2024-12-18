@@ -2,7 +2,7 @@
 #![no_main]
 use cortex_m_rt::entry;
 use panic_halt as _;
-use rtt_target::{rtt_init_print, rprintln};
+use rtt_target::{rprintln, rtt_init_print};
 use stm32f7xx_hal as _;
 #[entry]
 fn main() -> ! {
@@ -10,7 +10,7 @@ fn main() -> ! {
     let mut i = 0;
     #[cfg(feature = "float")]
     let mut f = 0.0;
-    
+
     rprintln!("Hello, world!");
     loop {
         rprintln!("i = {}", i);
@@ -20,6 +20,5 @@ fn main() -> ! {
             f += 0.1;
             rprintln!("f = {}", f);
         }
-
     }
 }

@@ -51,7 +51,7 @@ fn main() -> ! {
     loop {
         // Wait for the interrupt to fire
         free(|cs| {
-            if SEMAPHORE.borrow(cs).get() == false {
+            if !SEMAPHORE.borrow(cs).get() {
                 // Toggle debug LED
                 led1.toggle();
 
@@ -64,13 +64,7 @@ fn main() -> ! {
 #[interrupt]
 fn EXTI15_10() {
     free(|cs| {
-        match BUTTON_PIN.borrow(cs).borrow_mut().as_mut() {
-            // Clear the push button interrupt
-            Some(b) => b.clear_interrupt_pending_bit(),
-
-            // This should never happen
-            None => (),
-        }
+        if let Some(b) = BUTTON_PIN.borrow(cs).borrow_mut().as_mut() { b.clear_interrupt_pending_bit() }
 
         // Signal that the interrupt fired
         SEMAPHORE.borrow(cs).set(false);
