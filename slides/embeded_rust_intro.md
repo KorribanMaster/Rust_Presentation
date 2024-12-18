@@ -307,9 +307,8 @@ loop {
 - Example using a BSP:
 
 ```rust
-let board = bsp::Board::new;
-let mut led = board.leds.get(0).unwrap();
-led.on();
+let mut board = bsp::Board::new;
+board.led1.on();
 ```
 
 - Convenient for managing multiple peripherals on a specific board
