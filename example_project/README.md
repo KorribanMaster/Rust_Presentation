@@ -17,9 +17,9 @@ The following crates are provided with this example
 
 > Quickly set up a [`probe-rs`] + [`defmt`] + [`flip-link`] embedded project
 
-[`probe-rs`]: https://crates.io/crates/probe-rs
-[`defmt`]: https://github.com/knurling-rs/defmt
-[`flip-link`]: https://github.com/knurling-rs/flip-link
+[`probe-rs`](https://crates.io/crates/probe-rs)
+[`defmt`](https://github.com/knurling-rs/defmt)
+[`flip-link`](https://github.com/knurling-rs/flip-link)
 
 ## Dependencies
 
@@ -49,12 +49,13 @@ Start by `cargo run`-ning your chosen crate and reading its respective documenta
 
 If you want to work with VSCode as your IDE i recommend to install the following extensions.
 
-- [rust-analyzer]: https://rust-analyzer.github.io/
-- [probe-rs]: https://github.com/probe-rs/vscode
+- [rust-analyzer](https://rust-analyzer.github.io/)
+- [probe-rs](https://github.com/probe-rs/vscode)
 
 Further reading:
 
-- [RA docs]: https://rust-analyzer.github.io/manual.html#configuration
+- [RA docs](https://rust-analyzer.github.io/manual.html#configuration)
+  
 ## Setup for a different target MCU
 
 ### 1. Set `probe-rs` chip

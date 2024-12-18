@@ -20,8 +20,6 @@ This repository aims to provide an introduction to Rust in the embedded space.
 - [knurling session](https://session20q4.ferrous-systems.com/introduction)
 - [testing an embeddeed](https://ferrous-systems.com/blog/test-embedded-app/)
 
-## Template repos
-
 ## License
 
 The slides are licensed under [CC0-1.0](./LICENSE-CC0)
