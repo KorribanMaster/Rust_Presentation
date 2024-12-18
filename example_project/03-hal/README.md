@@ -13,16 +13,18 @@ The goal of this project is to demonstrate the use of the HAL layer to control t
 
 This project uses the following crates:
 
-- `stm32f7xx-hal`: The HAL layer for STM32F767ZI.
-- `cortex-m`: For the core peripherals.
-- `embedded-hal`: To abstract over the low-level hardware functions.
+- [cortex-m](https://docs.rs/cortex-m/0.7.7/cortex_m/): Low level access to Cortex-M processors
+- [cortex-m-rt](https://docs.rs/cortex-m-rt/latest/cortex_m_rt/): Startup code and minimal runtime for Cortex-M microcontrollers
+- [panic-halt](https://crates.io/crates/panic-halt): Set the panicking behavior to halt
+- [stm32f7xx-hal](https://crates.io/crates/stm32f7xx-hal): HAL for the STM32F7 family of microcontrollers
+- [embedded-hal](https://crates.io/crates/embedded-hal): To abstract over the low-level hardware functions.
 
 ## Run
 
 To get started with this project, follow these steps:
 
 1. Ensure you have Rust and the required tools from [before](../README.md) installed.
-2. Navigate to the `hal` directory.
+2. Navigate to the `03-hal` directory.
 3. Run `cargo build` to build the project.
 4. Connect your STM32F767ZI Nucleo board to your computer.
 5. Run `cargo run` to flash the program to the board.

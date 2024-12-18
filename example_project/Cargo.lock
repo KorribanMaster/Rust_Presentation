@@ -308,7 +308,6 @@ version = "0.1.0"
 dependencies = [
  "cortex-m",
  "cortex-m-rt",
- "embedded-alloc",
  "embedded-hal 0.2.7",
  "panic-halt",
  "stm32f7xx-hal",

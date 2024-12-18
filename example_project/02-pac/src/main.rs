@@ -1,13 +1,10 @@
 #![no_std]
 #![no_main]
 
-use cortex_m_rt::entry;
 use cortex_m::asm::nop;
+use cortex_m_rt::entry;
 use panic_halt as _; // Panic handler
-use stm32f7xx_hal::{
-    prelude::*,
-    pac,
-};
+use stm32f7xx_hal::pac;
 #[entry]
 fn main() -> ! {
     // Safety: We are ensuring we have exclusive access to the device peripherals.
@@ -45,4 +42,3 @@ fn main() -> ! {
         }
     }
 }
-
